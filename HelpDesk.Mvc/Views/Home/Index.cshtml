@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Help Desk Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Total Tickets</div>
+                <div class="card-body">
+                    <h2 class="card-title">@ViewBag.TotalTickets</h2>
+                </div>
+                <div class="card-footer">
+                    <a href="@Url.Action("Index", "Tickets")" class="btn btn-light btn-sm">View All</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Open Tickets</div>
+                <div class="card-body">
+                    <h2 class="card-title">@ViewBag.OpenTickets</h2>
+                </div>
+                <div class="card-footer">
+                    <a href="@Url.Action("Filter", "Tickets", new { status = "Open" })" class="btn btn-light btn-sm">View Open</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Closed Tickets</div>
+                <div class="card-body">
+                    <h2 class="card-title">@ViewBag.ClosedTickets</h2>
+                </div>
+                <div class="card-footer">
+                    <a href="@Url.Action("Filter", "Tickets", new { status = "Closed" })" class="btn btn-light btn-sm">View Closed</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <h3>Quick Actions</h3>
+                <a href="@Url.Action("Create", "Tickets")" class="btn btn-primary">Raise New Ticket</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,90 @@
+@model HelpDesk.Mvc.Models.Ticket
+
+@{
+    ViewData["Title"] = "Ticket Details";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Ticket Details</h2>
+        <div>
+            <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-secondary">Edit</a>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>@Model.Title</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Title</dt>
+                <dd class="col-sm-9">@Model.Title</dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">@Model.Description</dd>
+
+                <dt class="col-sm-3">Category</dt>
+                <dd class="col-sm-9">@Model.Category</dd>
+
+                <dt class="col-sm-3">Priority</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @GetPriorityBadgeClass(Model.Priority)">
+                        @Model.Priority
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @GetStatusBadgeClass(Model.Status)">
+                        @Model.Status
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Created Date</dt>
+                <dd class="col-sm-9">@Model.CreatedDate.ToString("MM/dd/yyyy HH:mm:ss")</dd>
+
+                <dt class="col-sm-3">Updated Date</dt>
+                <dd class="col-sm-9">
+                    @if (Model.UpdatedDate.HasValue)
+                    {
+                        @Model.UpdatedDate.Value.ToString("MM/dd/yyyy HH:mm:ss")
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not updated</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetPriorityBadgeClass(string priority)
+    {
+        return priority switch
+        {
+            "Critical" => "bg-danger",
+            "High" => "bg-warning text-dark",
+            "Medium" => "bg-info text-dark",
+            "Low" => "bg-secondary",
+            _ => "bg-light text-dark"
+        };
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Open" => "bg-primary",
+            "In Progress" => "bg-warning text-dark",
+            "Closed" => "bg-success",
+            _ => "bg-light text-dark"
+        };
+    }
+}
