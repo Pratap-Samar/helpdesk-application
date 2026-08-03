@@ -1,3 +1,6 @@
+MP Online Assignment 
+Samar Pratap - IN26013564
+
 # Help Desk Ticket Management System
 
 A complete Help Desk Ticket Management System built with ASP.NET Core, featuring a Web API, MVC frontend, and unit tests.
@@ -247,5 +250,3 @@ HelpDeskManagement/
 - Phase 4: Git Repository pushed to GitHub
 
 ---
-
-*Generated as part of Help Desk Ticket Management System assignment*
