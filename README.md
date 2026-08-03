@@ -6,7 +6,7 @@ A complete Help Desk Ticket Management System built with ASP.NET Core, featuring
 
 - **HelpDesk.Api** - ASP.NET Core Web API with Entity Framework Core and Repository Pattern
 - **HelpDesk.Mvc** - ASP.NET Core MVC application consuming the Web API through a Service Layer
-- **HelpDesk.Tests** - xUnit test project with Moq-based unit tests (coming in Phase 3)
+- **HelpDesk.Tests** - xUnit test project with Moq-based unit tests
 
 ## Features Implemented
 
@@ -29,17 +29,21 @@ A complete Help Desk Ticket Management System built with ASP.NET Core, featuring
 - ✅ Filter Tickets by Status (Open/In Progress/Closed)
 - ✅ Navigation links in layout
 
-### Phase 3 - Unit Testing (Pending)
-- [ ] xUnit test project with Moq
-- [ ] Repository layer mocking
-- [ ] Controller unit tests
+### Phase 3 - Unit Testing (Completed)
+- ✅ xUnit test project with Moq
+- ✅ Repository layer mocking
+- ✅ 13 unit tests covering all CRUD operations and filtering
+
+### Phase 4 - Git & GitHub (Completed)
+- ✅ Git repository with proper .gitignore
+- ✅ Pushed to GitHub: https://github.com/Pratap-Samar/helpdesk-application
 
 ## Technology Stack
 
 - **Framework**: ASP.NET Core (.NET 10)
 - **Database**: SQL Server (LocalDB) with Entity Framework Core
 - **Architecture**: Repository Pattern, Service Layer
-- **Testing**: xUnit, Moq (planned)
+- **Testing**: xUnit, Moq
 - **Frontend**: Bootstrap 5, Razor Views
 
 ## API Endpoints
@@ -68,32 +72,179 @@ A complete Help Desk Ticket Management System built with ASP.NET Core, featuring
 ## Getting Started
 
 ### Prerequisites
-- .NET 10 SDK
-- SQL Server LocalDB (included with Visual Studio)
+- .NET 10 SDK (or .NET 8+)
+- SQL Server LocalDB (included with Visual Studio / Visual Studio Build Tools)
 
 ### Running the Application
 
-1. **Start the API** (Terminal 1):
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Pratap-Samar/helpdesk-application.git
+   cd helpdesk-application
+   ```
+
+2. **Restore dependencies**:
+   ```bash
+   dotnet restore
+   ```
+
+3. **Apply database migrations** (creates LocalDB database):
+   ```bash
+   dotnet ef database update --project HelpDesk.Api
+   ```
+
+4. **Start the API** (Terminal 1):
    ```bash
    dotnet run --project HelpDesk.Api --urls http://localhost:5210
    ```
+   API will be available at: http://localhost:5210/api/ticket
 
-2. **Start the MVC App** (Terminal 2):
+5. **Start the MVC App** (Terminal 2):
    ```bash
    dotnet run --project HelpDesk.Mvc --urls http://localhost:5257
    ```
+   Web UI will be available at: http://localhost:5257
 
-3. **Access the application**:
-   - Web UI: http://localhost:5257
-   - API: http://localhost:5210/api/ticket
+### Alternative: Run from Visual Studio
+1. Open `HelpDeskManagement.slnx` in Visual Studio
+2. Set **HelpDesk.Api** as startup project
+3. Press F5 to run API
+4. Right-click **HelpDesk.Mvc** → Debug → Start New Instance
+5. Or configure multiple startup projects in Solution properties
+
+## Testing the Application
+
+### Manual Testing (via Browser)
+
+1. **Open Dashboard**: http://localhost:5257/
+   - Verify Total/Open/Closed ticket counts
+   - Click navigation links to test all pages
+
+2. **Create a Ticket**:
+   - Navigate to "Raise Ticket" or http://localhost:5257/Tickets/Create
+   - Fill in Title, Description, Category (Software/Hardware/Network), Priority (Low/Medium/High/Critical)
+   - Status is auto-set to "Open"
+   - Submit → Redirects to All Tickets list
+
+3. **View All Tickets**: http://localhost:5257/Tickets
+   - Table shows all tickets with colored badges for Priority/Status
+   - Click Details/Edit/Delete actions
+
+4. **Edit Ticket**: Click "Edit" on any ticket
+   - Modify Title, Description, Category, Priority, Status (Open/In Progress/Closed)
+   - Save → Redirects to All Tickets
+
+5. **Filter by Status**: http://localhost:5257/Tickets/Filter
+   - Select Status from dropdown (Open/In Progress/Closed)
+   - Click Filter → Shows matching tickets
+
+6. **Delete Ticket**: Click "Delete" → Confirm deletion
+
+7. **Verify API Data**: http://localhost:5210/api/ticket
+   - Returns JSON array of all tickets
+
+### Running Unit Tests
+
+```bash
+# Run all tests
+dotnet test HelpDesk.Tests/HelpDesk.Tests.csproj
+
+# Run with verbose output
+dotnet test HelpDesk.Tests/HelpDesk.Tests.csproj --verbosity normal
+
+# Run specific test class
+dotnet test HelpDesk.Tests/HelpDesk.Tests.csproj --filter "FullyQualifiedName~TicketControllerTests"
+
+# Run with coverage (requires coverlet)
+dotnet test HelpDesk.Tests/HelpDesk.Tests.csproj --collect:"XPlat Code Coverage"
+```
+
+**Test Results**: 13 tests passing covering:
+- GetAllTickets (with data, empty)
+- GetTicketById (found, not found)
+- CreateTicket (success)
+- UpdateTicket (success, not found, bad request)
+- DeleteTicket (success, not found)
+- GetTicketsByStatus (with matches, empty)
+
+### API Testing with curl/Postman
+
+```bash
+# Get all tickets
+curl http://localhost:5210/api/ticket
+
+# Get ticket by ID
+curl http://localhost:5210/api/ticket/1
+
+# Create ticket
+curl -X POST http://localhost:5210/api/ticket \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test","description":"Test desc","category":"Software","priority":"High","status":"Open"}'
+
+# Update ticket
+curl -X PUT http://localhost:5210/api/ticket/1 \
+  -H "Content-Type: application/json" \
+  -d '{"id":1,"title":"Updated","description":"Updated desc","category":"Hardware","priority":"Critical","status":"In Progress"}'
+
+# Delete ticket
+curl -X DELETE http://localhost:5210/api/ticket/1
+
+# Filter by status
+curl http://localhost:5210/api/ticket/status/Open
+```
 
 ## Database
 
 The application uses SQL Server LocalDB with automatic migrations. Database name: `HelpDeskDb`
 
+To reset database:
+```bash
+dotnet ef database drop --project HelpDesk.Api --force
+dotnet ef database update --project HelpDesk.Api
+```
+
+## Project Structure
+
+```
+HelpDeskManagement/
+├── HelpDesk.Api/
+│   ├── Controllers/TicketController.cs
+│   ├── Data/HelpDeskDbContext.cs
+│   ├── Models/Ticket.cs
+│   ├── Repositories/ITicketRepository.cs
+│   ├── Repositories/TicketRepository.cs
+│   ├── Migrations/
+│   └── Program.cs
+├── HelpDesk.Mvc/
+│   ├── Controllers/HomeController.cs
+│   ├── Controllers/TicketsController.cs
+│   ├── Models/Ticket.cs
+│   ├── Services/TicketService.cs
+│   ├── Views/
+│   │   ├── Home/Index.cshtml (Dashboard)
+│   │   ├── Tickets/Index.cshtml (All Tickets)
+│   │   ├── Tickets/Create.cshtml
+│   │   ├── Tickets/Edit.cshtml
+│   │   ├── Tickets/Details.cshtml
+│   │   ├── Tickets/Delete.cshtml
+│   │   ├── Tickets/Filter.cshtml
+│   │   └── Shared/_Layout.cshtml
+│   └── Program.cs
+├── HelpDesk.Tests/
+│   └── TicketControllerTests.cs (13 tests)
+├── HelpDeskManagement.slnx
+├── .gitignore
+└── README.md
+```
+
 ## Status
 
-**Phase 1 & 2 Complete** - Ready for Phase 3 (Unit Testing)
+**All Phases Complete** ✅
+
+- Phase 1: Web API with EF Core, Repository Pattern, LocalDB
+- Phase 2: MVC Application with Service Layer, Full UI
+- Phase 3: Unit Tests with xUnit + Moq (13 tests passing)
+- Phase 4: Git Repository pushed to GitHub
 
 ---
 
